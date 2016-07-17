@@ -17,12 +17,19 @@
 import time
 import psutil
 import subprocess as sp
-import logging as log
+import logging
+
+log = logging.getLogger('radio_watcher')
+log.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(message)s')
+ch.setFormatter(formatter)
+log.addHandler(ch)
 
 prev_rx = 0
 playing_thresh_per_second = 15000
 sampling_interval = 2
-long_wait_interval = 5
 player_should_be_playing = True
 
 # global settings
@@ -141,7 +148,9 @@ def get_speed():
 
 def is_it_playing(speed):
     global sampling_interval, playing_thresh_per_second
-    return speed > playing_thresh_per_second*sampling_interval
+    playing = speed > playing_thresh_per_second*sampling_interval
+    log.info("Playing is %s" % str(playing))
+    return playing
 
 def stop_cmus():
     p_stop = sp.Popen(cmd_stop.split())
@@ -159,13 +168,15 @@ def restart_cmus():
         log.error('Start failed')
 
 def update_time_status():
-    global player_should_be_playing
+    global player_should_be_playing, sampling_interval
     w, h, m = get_relevant_time()
     if 7 <= h <= 20:
-        log.info("Player should be OFF")
+        log.info("Player should be ON")
+        sampling_interval = 2
         player_should_be_playing = True
     else:
-        log.info("Player should be ON")
+        log.info("Player should be OFF")
+        sampling_interval = 120
         player_should_be_playing = False
 
 def main_loop():
@@ -174,7 +185,7 @@ def main_loop():
         update_time_status()
         speed = get_speed()
         log.debug('Speed %d' % speed),
-        if is_it_playing(speed) == player_should_be_playing:
+        if is_it_playing(speed) != player_should_be_playing:
             if player_should_be_playing:
                 restart_cmus()
             else:
