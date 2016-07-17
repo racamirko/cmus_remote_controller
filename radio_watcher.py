@@ -102,28 +102,6 @@ class Period:
             if not self._check_settings_valid():
                 return self._apply_settings()
 
-    @staticmethod
-    def compare_two_tuples(t1, t2):
-        
-            
-    @staticmethod
-    def compare_two_interval_values(parent_int, child_int):
-        if parent_int is tuple and child_int is tuple:
-            return Period.compare_two_tuples(p1, p2)
-        else:
-            
-            
-    def period_overlap(self, period):
-        """
-        Returns: 0 - no overlap
-                 1 - starts before, finishes within
-                 2 - starts within, finishes after
-                 3 - completly contained within this period
-        """
-        
-        
-    def add_period(self, period):
-        pass
 
 def get_relevant_time():
     time_data = time.localtime()

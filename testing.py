@@ -38,7 +38,7 @@ class TestSubPeriod(ut.TestCase):
         p1 = Period(4, None, None,
                     True, 80) 
         p1._apply_settings = MagicMock(return_value=True)
-        p1._check_settings_valid = MagicMock(return_value=False)       
+        p1._check_settings_valid = MagicMock(return_value=False)
         p2 = Period(4, (12, 13), None, True, 80)
         p2._apply_settings = MagicMock(return_value=True)
         p2._check_settings_valid = MagicMock(return_value=False)
@@ -53,8 +53,6 @@ class TestSubPeriod(ut.TestCase):
         parent_period._apply_settings = MagicMock(return_value=True)
         parent_period._check_settings_valid = MagicMock(return_value=False)
         # children periods
-        ch1 = Period((0.5), (7, 23)
         
-
 if __name__ == '__main__':
     ut.main()
