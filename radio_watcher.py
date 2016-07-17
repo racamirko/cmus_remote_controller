@@ -3,15 +3,6 @@
     CMUS connection controller (for streaming radio) and interval-based
     scheduler (set various playing profiles based on the time of day/
     week.
-
-    TODO/Wishlist:
-        - isolate the adding of intervals into a tree. No structure
-          Needs to be known for adding a new interval
-        - Exception handling - we should be able to modify the interval
-          settings and it stays that way (temporary) e.g. turn the
-          music down via Flask interface and it doesn't change back
-          to the original settings
-        - Flask interface for controlling the behaviour of exceptions
 """
 
 import time
@@ -19,6 +10,8 @@ import psutil
 import subprocess as sp
 import logging
 
+
+# Logging setup
 log = logging.getLogger('radio_watcher')
 log.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
@@ -27,12 +20,13 @@ formatter = logging.Formatter('%(asctime)s %(message)s')
 ch.setFormatter(formatter)
 log.addHandler(ch)
 
+# global variables
 prev_rx = 0
 playing_thresh_per_second = 15000
 sampling_interval = 2
 player_should_be_playing = True
 
-# global settings
+# config
 volume_loud = 10000
 volume_quiet = 8000
 cmd_start = 'cmus-remote -p'
