@@ -22,6 +22,7 @@ import logging as log
 prev_rx = 0
 playing_thresh_per_second = 15000
 sampling_interval = 2
+long_wait_interval = 5
 player_should_be_playing = True
 
 # global settings
@@ -142,28 +143,43 @@ def is_it_playing(speed):
     global sampling_interval, playing_thresh_per_second
     return speed > playing_thresh_per_second*sampling_interval
 
-def restart_cmus():
+def stop_cmus():
     p_stop = sp.Popen(cmd_stop.split())
     if p_stop.wait() == 0:
         log.info('Stop successful')
     else:
         log.error('Stop failed')
 
+def restart_cmus():
+    stop_cmus()
     p_start = sp.Popen(cmd_start.split())
     if p_start.wait() == 0:
         log.info('Start successful')
     else:
         log.error('Start failed')
 
+def update_time_status():
+    w, h, m = get_relevant_time()
+    if 7 <= h <= 20:
+        player_should_be_playing = True
+    else:
+        player_should_be_playing = False
+
 def main_loop():
     global player_should_be_playing
     while True:
+        update_time_status()
         speed = get_speed()
         log.debug('Speed %d' % speed),
-        if not is_it_playing(speed) and player_should_be_playing:
-            log.debug('guessing: down')
-            restart_cmus()
-        time.sleep(sampling_interval)
+        if is_it_playing(speed) == player_should_be_playing:
+            if player_should_be_playing:
+                restart_cmus()
+            else
+                stop_cmus()
+        if player_should_be_playing:
+            time.sleep(sampling_interval)
+        else:
+            time.sleep(long_wait_interval)
 
 if __name__=='__main__':
     prev_rx = psutil.net_io_counters().bytes_recv
