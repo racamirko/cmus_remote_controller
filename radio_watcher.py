@@ -159,10 +159,13 @@ def restart_cmus():
         log.error('Start failed')
 
 def update_time_status():
+    global player_should_be_playing
     w, h, m = get_relevant_time()
     if 7 <= h <= 20:
+        log.info("Player should be OFF")
         player_should_be_playing = True
     else:
+        log.info("Player should be ON")
         player_should_be_playing = False
 
 def main_loop():
@@ -174,12 +177,9 @@ def main_loop():
         if is_it_playing(speed) == player_should_be_playing:
             if player_should_be_playing:
                 restart_cmus()
-            else
+            else:
                 stop_cmus()
-        if player_should_be_playing:
-            time.sleep(sampling_interval)
-        else:
-            time.sleep(long_wait_interval)
+        time.sleep(sampling_interval)
 
 if __name__=='__main__':
     prev_rx = psutil.net_io_counters().bytes_recv
